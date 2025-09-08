@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GHOST LIST</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+  :root {
+    /* 🌙 Default = Dark Mode */
+    --bg: #181a1b;
+    --card: #1f2223;
+    --muted: #9ca3af;
+    --text: #e5e7eb;
+    --acc: #b2f2bb;
+    --bad: #f87171;
+    --shadow-light: #2a2d2f;
+    --shadow-dark: #0e0f10;
+  }
+  body.light {
+    /* ☀️ Light Mode */
+    --bg: #fdfdfd;
+    --card: #ffffff;
+    --muted: #6b7280;
+    --text: #2c2c2c;
+    --acc: #69db7c;
+    --bad: #dc2626;
+    --shadow-light: #ffffff;
+    --shadow-dark: #d1d9e6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    transition: background .5s ease, color .5s ease;
+    opacity: 0;
+    animation: fadeInBody .8s ease forwards;
+  }
+  @keyframes fadeInBody {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  header { padding: 40px 18px 20px; text-align: center; }
+  header h1 {
+    margin: 0 0 10px;
+    font-size: clamp(26px, 6vw, 38px);
+    font-weight: 1000;
+    display: flex;align-items: center;justify-content: center;gap: 10px;
+    color: var(--acc);
+    text-shadow: 2px 2px 6px var(--shadow-dark), -2px -2px 6px var(--shadow-light);
+  }
+  header p { margin: 0; color: var(--muted); font-size: 15px; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 16px; }
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 9px 9px 16px var(--shadow-dark), -9px -9px 16px var(--shadow-light);
+    animation: fadeIn .5s ease;
+    transition: background .5s ease, box-shadow .5s ease, color .5s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media(min-width:768px){ .grid{grid-template-columns:1fr 1fr;} }
+  label { display:flex;align-items:center;gap:6px;font-weight:600;margin-bottom:8px;font-size:14px; }
+  .uploader {
+    padding: 20px;
+    border-radius: 14px;
+    text-align:center;
+    font-size: 14px;
+    background: var(--card);
+    box-shadow: inset 5px 5px 10px var(--shadow-dark),
+                inset -5px -5px 10px var(--shadow-light);
+    transition: background .5s ease, box-shadow .5s ease;
+  }
+  input[type=file]{width:100%;cursor:pointer;margin-top:10px;}
+  .btn {
+    display:inline-flex;align-items:center;justify-content:center;
+    gap:8px;background:var(--card);color:var(--text);
+    border:none;padding:10px 16px;
+    border-radius:14px;font-weight:600;font-size:14px;
+    cursor:pointer;transition: all .3s ease;
+    box-shadow: 5px 5px 10px var(--shadow-dark),
+                -5px -5px 10px var(--shadow-light);
+  }
+  .btn:hover:not(:disabled){transform:translateY(-2px);}
+  .btn:active{
+    box-shadow: inset 5px 5px 10px var(--shadow-dark),
+                inset -5px -5px 10px var(--shadow-light);
+  }
+  .btn.secondary{color:var(--muted);}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;font-size:14px}
+  .pill{
+    display:flex;align-items:center;gap:6px;
+    padding:6px 12px;border-radius:999px;
+    background: var(--card);
+    box-shadow: inset 2px 2px 5px var(--shadow-dark),
+                inset -2px -2px 5px var(--shadow-light);
+    font-size: 13px;font-weight: 600;color: var(--acc);
+  }
+  .table-wrap{
+    overflow:auto;border-radius:14px;
+    background: var(--card);
+    box-shadow: inset 5px 5px 10px var(--shadow-dark),
+                inset -5px -5px 10px var(--shadow-light);
+    transition: background .5s ease, box-shadow .5s ease;
+  }
+  table{width:100%;border-collapse:collapse;min-width:500px}
+  thead th{
+    position:sticky;top:0;background: var(--card);color: var(--muted);
+    font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:10px;
+    transition: background .5s ease, color .5s ease;
+  }
+  tbody td{padding:10px;color:var(--text);font-size:14px;text-align:left;}
+  tbody tr{opacity:0;transform:translateY(10px);}
+  tbody tr.show{animation:fadeRow .4s ease forwards;}
+  @keyframes fadeRow {
+    to {opacity:1;transform:translateY(0);}
+  }
+  tbody tr:hover td{
+    background: var(--bg);
+    box-shadow: inset 2px 2px 5px var(--shadow-dark),
+                inset -2px -2px 5px var(--shadow-light);
+  }
+  a{color:var(--acc);text-decoration:none}
+  a:hover{text-decoration:underline}
+  footer{color:var(--muted);text-align:center;padding:18px;font-size:13px}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px;text-align:center}
+  
+  /* 🔘 Toggle Mode Button */
+  .toggle-mode {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    background: var(--card);
+    color: var(--text);
+    display: flex;align-items: center;justify-content: center;
+    box-shadow: 4px 4px 8px var(--shadow-dark),
+                -4px -4px 8px var(--shadow-light);
+    transition: all .3s ease;
+  }
+  .toggle-mode:hover{transform:translateY(-2px);}
+  .toggle-mode:active{
+    box-shadow: inset 4px 4px 8px var(--shadow-dark),
+                inset -4px -4px 8px var(--shadow-light);
+  }
+  .toggle-mode svg { 
+    width: 20px; height: 20px; stroke: var(--text);
+    transition: transform .4s ease, opacity .4s ease;
+  }
+  .icon-anim { transform: rotate(180deg); opacity: 0; }
+
+  /* LOADING */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity .5s ease, visibility .5s ease;
+  }
+  .loading-overlay.hidden { opacity:0; visibility:hidden; }
+  .spinner {
+    width: 50px; height: 50px;
+    border: 4px solid var(--muted);
+    border-top-color: var(--acc);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg);} }
+  </style>
+</head>
+<body>
+  <!-- LOADING -->
+  <div class="loading-overlay" id="loading"><div class="spinner"></div></div>
+
+  <button class="toggle-mode" id="modeToggle"><i data-lucide="sun"></i></button>
+  <header>
+    <h1><i data-lucide="ghost"></i> GHOST LIST</h1>
+    <p>When others leave in silence, every trace will still be revealed</p>
+  </header>
+  <main class="wrap">
+    <section class="card grid">
+      <div>
+        <label><i data-lucide="user-plus"></i> 1. Unggah <code>following.json</code></label>
+        <div class="uploader">
+          <i data-lucide="folder-open"></i>
+          <input id="fileFollowing" type="file" accept="application/json" />
+          <div class="hint">Sumber: <code>connections/following.json</code></div>
+        </div>
+      </div>
+      <div>
+        <label><i data-lucide="users"></i> 2. Unggah <code>followers.json</code></label>
+        <div class="uploader">
+          <i data-lucide="folder-open"></i>
+          <input id="fileFollowers" type="file" accept="application/json" />
+          <div class="hint">Sumber: <code>connections/followers_1.json</code></div>
+        </div>
+      </div>
+      <div class="actions" style="grid-column:1/-1">
+        <button id="btnRun" class="btn" disabled><i data-lucide="rocket"></i> Proses</button>
+        <button id="btnDownload" class="btn secondary" disabled><i data-lucide="download"></i> Unduh CSV</button>
+      </div>
+      <div class="stats" style="grid-column:1/-1">
+        <span class="pill" id="statFollowing"><i data-lucide="user"></i> Following: 0</span>
+        <span class="pill" id="statFollowers"><i data-lucide="users"></i> Followers: 0</span>
+        <span class="pill" id="statUnf"><i data-lucide="user-x"></i> Tidak follow balik: 0</span>
+      </div>
+      <div class="table-wrap" style="grid-column:1/-1">
+        <table id="resultTable">
+          <thead>
+            <tr><th>#</th><th>Username</th><th>Link</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+    <p class="hint">⚡ Semua proses berjalan <strong>lokal di browser</strong>. Tidak ada data yang dikirim ke server.</p>
+  </main>
+  <footer>⚡ Dibuat dengan ringan untuk Bayu • © 2025</footer>
+
+<script>
+  /* ---------- helper & state ---------- */
+  const by = (id) => document.getElementById(id);
+  let followingSet = new Set(), followersSet = new Set(), resultList = [];
+
+  function normalizeUsername(v){ return String(v||"").trim().replace(/^@/, "").toLowerCase(); }
+
+  async function readJSON(file){
+    if(!file) return null;
+    const text = await file.text();
+    try { return JSON.parse(text); }
+    catch(e){ alert("File bukan JSON valid: "+file.name); return null; }
+  }
+
+  /* ---------- extract helpers (robust terhadap format IG export) ---------- */
+  function extractFollowing(json){
+    const out = [];
+    if(!json) return out;
+    if(Array.isArray(json.relationships_following)){
+      for(const item of json.relationships_following){
+        const v = item?.string_list_data?.[0]?.value;
+        if(v) out.push(normalizeUsername(v));
+      }
+      return out;
+    }
+    if(json.relationships_following && Array.isArray(json.relationships_following.data)){
+      for(const item of json.relationships_following.data){
+        const v = item?.string_list_data?.[0]?.value;
+        if(v) out.push(normalizeUsername(v));
+      }
+      return out;
+    }
+    // generic search
+    const candidates = Object.values(json).find(v=>Array.isArray(v) && v.some(x=>x && x.string_list_data));
+    if(candidates){
+      for(const item of candidates){
+        const v = item?.string_list_data?.[0]?.value;
+        if(v) out.push(normalizeUsername(v));
+      }
+    }
+    return out;
+  }
+
+  function extractFollowers(json){
+    const out = [];
+    if(!json) return out;
+    if(Array.isArray(json)){
+      for(const item of json){
+        const v = item?.string_list_data?.[0]?.value;
+        if(v) out.push(normalizeUsername(v));
+      }
+      return out;
+    }
+    if(Array.isArray(json.relationships_followers)){
+      for(const item of json.relationships_followers){
+        const v = item?.string_list_data?.[0]?.value;
+        if(v) out.push(normalizeUsername(v));
+      }
+      return out;
+    }
+    if(json.relationships_followers && Array.isArray(json.relationships_followers.data)){
+      for(const item of json.relationships_followers.data){
+        const v = item?.string_list_data?.[0]?.value;
+        if(v) out.push(normalizeUsername(v));
+      }
+      return out;
+    }
+    // generic search
+    const candidates = Object.values(json).find(v=>Array.isArray(v) && v.some(x=>x && x.string_list_data));
+    if(candidates){
+      for(const item of candidates){
+        const v = item?.string_list_data?.[0]?.value;
+        if(v) out.push(normalizeUsername(v));
+      }
+    }
+    return out;
+  }
+
+  /* ---------- UI update ---------- */
+  function updateStats(){
+    by('statFollowing').innerHTML = `<i data-lucide="user"></i> Following: ${followingSet.size}`;
+    by('statFollowers').innerHTML = `<i data-lucide="users"></i> Followers: ${followersSet.size}`;
+    by('statUnf').innerHTML = `<i data-lucide="user-x"></i> Tidak follow balik: ${resultList.length}`;
+    lucide.createIcons();
+  }
+
+  function renderTable(){
+    const tbody = by('resultTable').querySelector('tbody');
+    tbody.innerHTML = '';
+    resultList.forEach((u, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${i+1}</td><td>${u}</td><td><a href="https://www.instagram.com/${u}" target="_blank">/${u}</a></td>`;
+      tbody.appendChild(tr);
+      // staggered show
+      setTimeout(()=> tr.classList.add('show'), i * 40);
+    });
+  }
+
+  function toCSV(rows){
+    const esc = s => '"' + String(s).replace(/"/g,'""') + '"';
+    const header = ['No','username','url'];
+    const data = rows.map((u,i) => [i+1, u, `https://www.instagram.com/${u}`]);
+    return [header, ...data].map(r => r.map(esc).join(',')).join('\n');
+  }
+
+  /* ---------- main flow ---------- */
+  async function handleRun(){
+    // show simple small loading state on the button
+    const btn = by('btnRun');
+    btn.disabled = true;
+    const oldHTML = btn.innerHTML;
+    btn.innerHTML = `<i data-lucide="loader"></i> Memproses...`;
+    lucide.createIcons();
+
+    // compute results (already sets filled on change)
+    resultList = Array.from(followingSet).filter(u => !followersSet.has(u)).sort();
+    updateStats();
+    renderTable();
+    by('btnDownload').disabled = resultList.length === 0;
+
+    // restore button
+    setTimeout(()=>{ btn.innerHTML = oldHTML; lucide.createIcons(); enableRunIfReady(); }, 400);
+  }
+
+  function enableRunIfReady(){ by('btnRun').disabled = !(followingSet.size && followersSet.size); }
+
+  /* ---------- file input handlers ---------- */
+  by('fileFollowing').addEventListener('change', async e => {
+    followingSet = new Set();
+    const file = e.target.files[0];
+    if(!file) return;
+    const json = await readJSON(file);
+    extractFollowing(json).forEach(u => followingSet.add(u));
+    resultList = []; // reset previous result
+    updateStats();
+    renderTable();
+    enableRunIfReady();
+  });
+
+  by('fileFollowers').addEventListener('change', async e => {
+    followersSet = new Set();
+    const file = e.target.files[0];
+    if(!file) return;
+    const json = await readJSON(file);
+    extractFollowers(json).forEach(u => followersSet.add(u));
+    resultList = [];
+    updateStats();
+    renderTable();
+    enableRunIfReady();
+  });
+
+  by('btnRun').addEventListener('click', handleRun);
+
+  by('btnDownload').addEventListener('click', () => {
+    const csv = toCSV(resultList);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'unfollowers.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  /* ---------- dark/light toggle with icon animation ---------- */
+  const toggleBtn = by('modeToggle');
+  toggleBtn.addEventListener('click', () => {
+    // animate current icon
+    const oldIcon = toggleBtn.querySelector('svg');
+    if(oldIcon) oldIcon.classList.add('icon-anim');
+
+    setTimeout(()=>{
+      document.body.classList.toggle('light');
+      // set correct icon: sun when dark (so pressing shows sun meaning switch to light),
+      // but we want icon to represent current mode affordance. We'll show moon when light, sun when dark.
+      toggleBtn.innerHTML = document.body.classList.contains('light') ? '<i data-lucide="moon"></i>' : '<i data-lucide="sun"></i>';
+      lucide.createIcons();
+    }, 200);
+  });
+
+  /* ---------- initial loading overlay ---------- */
+  window.addEventListener('load', () => {
+    const loading = by('loading');
+    setTimeout(() => {
+      loading.classList.add('hidden');
+      // ensure icons present after load
+      lucide.createIcons();
+    }, 600);
+  });
+
+  // ensure lucide icons initially created
+  lucide.createIcons();
+</script>
+</body>
+  </html>

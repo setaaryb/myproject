@@ -36,18 +36,16 @@
             width: 100vw;
         }
 
-        /* Judul Gaya Game */
         p.overlay-title {
             font-size: 18px;
             font-weight: 900;
-            color: #FFD700; /* Warna Emas */
+            color: #FFD700;
             text-shadow: 3px 3px #000;
             line-height: 1.5;
             margin-bottom: 20px;
             text-transform: uppercase;
         }
 
-        /* Tombol Gaya Pixel */
         .overlay-button {
             display: inline-flex;
             align-items: center;
@@ -73,15 +71,14 @@
             margin: 24px -8px -8px;
         }
 
-        /* Warna Tombol yang Ceria */
         #accept-button {
-            background-color: #44AF69; /* Hijau Terang */
+            background-color: #44AF69;
             color: white;
             box-shadow: inset -4px -4px #2D7446;
         }
 
         #decline-button {
-            background-color: #F8333C; /* Merah Terang */
+            background-color: #F8333C;
             color: white;
             box-shadow: inset -4px -4px #A82229;
         }
@@ -109,8 +106,8 @@
         .overlay-body {
             max-width: 512px;
             text-align: center;
-            font-family: "Press Start 2P", cursive; /* Font Game */
-            background: #3A0CA3; /* Ungu Gelap khas game */
+            font-family: "Press Start 2P", cursive;
+            background: #3A0CA3;
             padding: 40px;
             border: 8px solid #4361EE;
             outline: 8px solid #3A0CA3;
@@ -156,7 +153,7 @@
 <div class="overlay-body">
 <iframe data-aa='2403793' src='https://ad.a-ads.com/2403793?size=300x250' style='width:300px; height:250px; border:0px; padding:0; overflow:hidden; background-color: transparent;'></iframe>
 <hr>
-<audio id="myAudio" loop>
+<audio autoplay>
     <source src="media/sound.mp3" type="audio/mpeg">
 </audio>
 <p class="overlay-title">👾 Ready to Play? 👾</p>
@@ -205,12 +202,6 @@
             acceptButton.addEventListener("click", buttonClick);
             declineButton.addEventListener("click", buttonClick);
             video.addEventListener("click", videoClick);
-
-            window.addEventListener('load', function() {
-                var audio = document.getElementById("myAudio");
-                audio.play().catch(function(error) {
-                });
-            });
         </script>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-07T0N39Y0D"></script>

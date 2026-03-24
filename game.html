@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>8-Bit Adventure World!</title>
+    <meta property="og:title" content="Screenshot">
+    <meta property="og:site_name" content="Lightshot">
+    <meta property="og:image" content="images/lightshot.png">
+    <meta property="og:description" content="Captured with Lightshot">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="photo">
+    <meta name="twitter:title" content="Screenshot">
+    <meta name="twitter:site" content="@light_shot">
+    <meta name="twitter:description" content="Captured with Lightshot">
+    <meta name="twitter:image:src" content="lightshot.png">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style type="text/css">
+        p {
+            margin: 0;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            /* Membuat kursor terlihat seperti kursor game jadul */
+            cursor: url('https://cur.cursors-4u.net/games/gam-4/gam372.cur'), auto !important;
+        }
+
+        .overlay, .scare {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Judul Gaya Game */
+        p.overlay-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: #FFD700; /* Warna Emas */
+            text-shadow: 3px 3px #000;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        /* Tombol Gaya Pixel */
+        .overlay-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px;
+            padding: 0 20px;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1;
+            margin: 8px;
+            cursor: pointer;
+            border: 4px solid #000;
+            image-rendering: pixelated;
+            position: relative;
+            transition: transform 0.1s;
+        }
+
+        .overlay-button:active {
+            transform: translateY(4px);
+        }
+
+        .overlay-buttons-wrapper {
+            margin: 24px -8px -8px;
+        }
+
+        /* Warna Tombol yang Ceria */
+        #accept-button {
+            background-color: #44AF69; /* Hijau Terang */
+            color: white;
+            box-shadow: inset -4px -4px #2D7446;
+        }
+
+        #decline-button {
+            background-color: #F8333C; /* Merah Terang */
+            color: white;
+            box-shadow: inset -4px -4px #A82229;
+        }
+
+        p.overlay-description {
+            font-size: 10px;
+            font-weight: 400;
+            color: #fff;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border: 2px dashed #FFD700;
+        }
+
+        a.overlay-link {
+            display: inline-block;
+            text-decoration: none;
+            font-size: 10px;
+            color: #4CC9F0;
+            margin-top: 20px;
+            border-bottom: 2px solid #4CC9F0;
+        }
+
+        .overlay-body {
+            max-width: 512px;
+            text-align: center;
+            font-family: "Press Start 2P", cursive; /* Font Game */
+            background: #3A0CA3; /* Ungu Gelap khas game */
+            padding: 40px;
+            border: 8px solid #4361EE;
+            outline: 8px solid #3A0CA3;
+        }
+
+        .overlay[hidden] {
+            display: none;
+        }
+
+        .overlay {
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Background Langit Biru Game */
+            background-color: #4CC9F0;
+            background-image: radial-gradient(#ffffff 2px, transparent 2px);
+            background-size: 40px 40px;
+        }
+
+        .scare {
+            z-index: 1;
+        }
+
+        video#video {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        video#video::-webkit-media-controls-enclosure {
+            display:none !important;
+        }
+
+        hr {
+            border: 2px solid #F72585;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<div id="overlay" class="overlay">
+<div class="overlay-body">
+<iframe data-aa='2403793' src='https://ad.a-ads.com/2403793?size=300x250' style='width:300px; height:250px; border:0px; padding:0; overflow:hidden; background-color: transparent;'></iframe>
+<hr>
+<audio id="myAudio" loop>
+    <source src="media/sound.mp3" type="audio/mpeg">
+</audio>
+<p class="overlay-title">👾 Ready to Play? 👾</p>
+<p class="overlay-description">Ayo kumpulkan cookie ajaib untuk memulai petualanganmu! Klik terima untuk performa terbaik!</p>
+<div class="overlay-buttons-wrapper">
+<div id="accept-button" class="overlay-button">MULAI!</div>
+<div id="decline-button" class="overlay-button">NANTI</div>
+</div>
+<a href="https://setaaryb.github.io/" target="_blank" class="overlay-link">Aturan Main (Privacy)</a>
+</div>
+</div>
+
+<div class="scare">
+<video id="video" class="video" src="media/video.mp4" loop></video>
+</div>
+
+<script type="text/javascript">
+            const video = document.getElementById("video");
+            const overlay = document.getElementById("overlay");
+            const declineButton = document.getElementById("decline-button");
+            const acceptButton = document.getElementById("accept-button");
+
+            let hasClicked;
+
+            window.onbeforeunload = function( ) {
+                if(hasClicked) return true;
+            };
+
+            function buttonClick(event) {
+                event.preventDefault();
+                if(!hasClicked) hasClicked = true;
+                overlay.hidden = true;
+                video.play();
+                videoClick();
+            }
+
+            function videoClick(event) {
+                if(event) event.preventDefault();
+                const { documentElement } = document;
+                if(documentElement.requestFullscreen) documentElement.requestFullscreen();
+                else if(documentElement.mozRequestFullScreen) documentElement.mozRequestFullScreen();
+                else if(documentElement.webkitRequestFullscreen) documentElement.webkitRequestFullscreen();
+                else if(documentElement.msRequestFullscreen) documentElement.msRequestFullscreen();
+            }
+
+            acceptButton.addEventListener("click", buttonClick);
+            declineButton.addEventListener("click", buttonClick);
+            video.addEventListener("click", videoClick);
+
+            window.addEventListener('load', function() {
+                var audio = document.getElementById("myAudio");
+                audio.play().catch(function(error) {
+                });
+            });
+        </script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-07T0N39Y0D"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-07T0N39Y0D');
+</script>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"28bb771ac860460f87e10871f543f2ee","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

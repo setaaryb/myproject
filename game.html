@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>8-Bit Adventure World!</title>
+    <title>Game Gabut</title>
     <meta property="og:title" content="Screenshot">
     <meta property="og:site_name" content="Lightshot">
     <meta property="og:image" content="images/lightshot.png">
@@ -24,7 +24,6 @@
 
         *, *::before, *::after {
             box-sizing: border-box;
-            /* Membuat kursor terlihat seperti kursor game jadul */
             cursor: url('https://cur.cursors-4u.net/games/gam-4/gam372.cur'), auto !important;
         }
 
@@ -39,13 +38,14 @@
         p.overlay-title {
             font-size: 18px;
             font-weight: 900;
-            color: #FFD700;
+            color: #FFD700; /* Warna Emas */
             text-shadow: 3px 3px #000;
             line-height: 1.5;
             margin-bottom: 20px;
             text-transform: uppercase;
         }
 
+        /* Tombol Gaya Pixel */
         .overlay-button {
             display: inline-flex;
             align-items: center;
@@ -153,8 +153,8 @@
 <div class="overlay-body">
 <iframe data-aa='2403793' src='https://ad.a-ads.com/2403793?size=300x250' style='width:300px; height:250px; border:0px; padding:0; overflow:hidden; background-color: transparent;'></iframe>
 <hr>
-<audio autoplay>
-    <source src="media/sound.mp3" type="audio/mpeg">
+<audio id="myAudio" loop>
+        <source src="media/sound.mp3" type="audio/mpeg">
 </audio>
 <p class="overlay-title">👾 Ready to Play? 👾</p>
 <p class="overlay-description">Ayo kumpulkan cookie ajaib untuk memulai petualanganmu! Klik terima untuk performa terbaik!</p>
@@ -173,6 +173,7 @@
 <script type="text/javascript">
             const video = document.getElementById("video");
             const overlay = document.getElementById("overlay");
+            var audio = document.getElementById("myAudio");
             const declineButton = document.getElementById("decline-button");
             const acceptButton = document.getElementById("accept-button");
 
@@ -181,6 +182,10 @@
             window.onbeforeunload = function( ) {
                 if(hasClicked) return true;
             };
+
+            document.body.addEventListener('click', function() {
+            audio.play();
+            }, { once: true });
 
             function buttonClick(event) {
                 event.preventDefault();
@@ -202,6 +207,12 @@
             acceptButton.addEventListener("click", buttonClick);
             declineButton.addEventListener("click", buttonClick);
             video.addEventListener("click", videoClick);
+
+            window.addEventListener('load', function() {
+                var audio = document.getElementById("myAudio");
+                audio.play().catch(function(error) {
+                });
+            });
         </script>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-07T0N39Y0D"></script>

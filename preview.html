@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f04f">
+  <meta name="description" content="QRIS Converter — Convert static QRIS to dynamic QRIS.">
+  <title>QRIS LAB — Converter</title>
+
+  <style>
+    :root {
+      --bg: #f5f4ed;
+      --paper: #ffffff;
+      --ink: #171717;
+      --yellow: #f5f04f;
+      --pink: #ff8bc2;
+      --green: #b7f7a8;
+      --blue: #9bdcff;
+      --border: 3px solid var(--ink);
+      --shadow: 6px 6px 0 var(--ink);
+      --radius: 5px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      background-image: radial-gradient(#d1d0c8 1px, transparent 1px);
+      background-size: 18px 18px;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .container {
+      width: min(1080px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    /* NAVBAR */
+
+    header {
+      border-bottom: var(--border);
+      background: var(--yellow);
+    }
+
+    .navbar {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 23px;
+      font-weight: 950;
+      letter-spacing: -1.2px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: var(--border);
+      background: var(--paper);
+      box-shadow: 3px 3px 0 var(--ink);
+      font-size: 23px;
+    }
+
+    .badge {
+      padding: 9px 12px;
+      border: 2px solid var(--ink);
+      background: var(--paper);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    /* HERO */
+
+    .hero {
+      padding: 46px 0 28px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 7px 10px;
+      background: var(--pink);
+      border: 2px solid var(--ink);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      transform: rotate(-2deg);
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 20px 0 12px;
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: 0.98;
+      letter-spacing: -5px;
+      font-weight: 950;
+    }
+
+    h1 span {
+      background: var(--yellow);
+      box-shadow: 4px 0 0 var(--yellow), -4px 0 0 var(--yellow);
+    }
+
+    .hero p {
+      max-width: 560px;
+      margin: 20px 0 0;
+      font-size: 15px;
+      line-height: 1.8;
+      color: #4d4d4d;
+    }
+
+    /* MAIN LAYOUT */
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 24px;
+      align-items: start;
+      padding-bottom: 42px;
+    }
+
+    .card {
+      min-width: 0;
+      border: var(--border);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      padding: 18px 20px;
+      border-bottom: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 950;
+      letter-spacing: -0.5px;
+    }
+
+    .step {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 2px solid var(--ink);
+      background: var(--yellow);
+      font-weight: 950;
+    }
+
+    .card-body {
+      padding: 22px;
+    }
+
+    .field {
+      margin-bottom: 21px;
+    }
+
+    .field-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 9px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .hint {
+      color: #777;
+      font-size: 11px;
+    }
+
+    textarea, input, select {
+      width: 100%;
+      min-width: 0;
+      padding: 14px;
+      color: var(--ink);
+      background: #fafaf6;
+      border: 2px solid var(--ink);
+      border-radius: 0;
+      outline: none;
+      transition: box-shadow 0.15s;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      box-shadow: 4px 4px 0 var(--yellow);
+    }
+
+    textarea {
+      min-height: 155px;
+      resize: vertical;
+      line-height: 1.6;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    input {
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    select {
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .amount-wrap {
+      display: flex;
+      align-items: stretch;
+      border: 2px solid var(--ink);
+      background: #fafaf6;
+    }
+
+    .amount-prefix {
+      display: grid;
+      place-items: center;
+      padding: 0 14px;
+      border-right: 2px solid var(--ink);
+      background: var(--yellow);
+      font-weight: 950;
+    }
+
+    .amount-wrap input {
+      border: 0;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .button {
+      width: 100%;
+      min-height: 53px;
+      padding: 14px 18px;
+      border: var(--border);
+      border-radius: 0;
+      background: var(--yellow);
+      color: var(--ink);
+      box-shadow: 4px 4px 0 var(--ink);
+      font-weight: 950;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+
+    .button:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .button:active {
+      transform: translate(4px, 4px);
+      box-shadow: none;
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+      transform: none;
+      box-shadow: 4px 4px 0 var(--ink);
+    }
+
+    .button-secondary {
+      background: var(--paper);
+      box-shadow: none;
+    }
+
+    .button-small {
+      width: auto;
+      min-height: auto;
+      padding: 9px 12px;
+      font-size: 11px;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 13px;
+      border: 2px dashed var(--ink);
+      background: #fffbe0;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    /* RESULT */
+
+    .result-card {
+      position: sticky;
+      top: 20px;
+    }
+
+    .result-header {
+      background: var(--blue);
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border: 2px solid var(--ink);
+      background: var(--green);
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: 0.7px;
+    }
+
+    .status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      background: var(--ink);
+      border-radius: 50%;
+    }
+
+    .result-placeholder {
+      min-height: 290px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 25px;
+      text-align: center;
+    }
+
+    .placeholder-icon {
+      width: 100px;
+      height: 100px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 24px;
+      border: var(--border);
+      background: var(--yellow);
+      box-shadow: 5px 5px 0 var(--ink);
+      font-size: 48px;
+      transform: rotate(-4deg);
+    }
+
+    .result-placeholder h3 {
+      margin: 0 0 10px;
+      font-size: 19px;
+      font-weight: 950;
+    }
+
+    .result-placeholder p {
+      max-width: 270px;
+      margin: 0;
+      color: #666;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .result-content {
+      padding: 20px;
+    }
+
+    .result-content[hidden],
+    .result-placeholder[hidden] {
+      display: none;
+    }
+
+    .result-label {
+      margin-bottom: 10px;
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: 1px;
+    }
+
+    .payload-box {
+      padding: 14px;
+      border: 2px solid var(--ink);
+      background: #f6f6ef;
+      overflow-wrap: anywhere;
+      word-break: break-all;
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.8;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .result-actions .button {
+      flex: 1;
+    }
+
+    .json-box {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 2px dashed #aaa;
+    }
+
+    pre {
+      margin: 0;
+      padding: 14px;
+      max-height: 220px;
+      overflow: auto;
+      border: 2px solid var(--ink);
+      background: #1b1b1b;
+      color: #b7f7a8;
+      font-family: "Courier New", monospace;
+      font-size: 11px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 17px;
+      padding: 12px;
+      border: 2px solid var(--ink);
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .message.error {
+      display: block;
+      background: #ffc3c3;
+    }
+
+    .message.success {
+      display: block;
+      background: var(--green);
+    }
+
+    /* FOOTER */
+
+    footer {
+      border-top: var(--border);
+      background: var(--yellow);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 22px 0;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .footer-inner a {
+      color: var(--ink);
+    }
+
+    @media (max-width: 760px) {
+      .container {
+        width: min(100% - 28px, 540px);
+      }
+
+      .navbar {
+        min-height: 67px;
+      }
+
+      .brand {
+        font-size: 19px;
+      }
+
+      .brand-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 19px;
+      }
+
+      .badge {
+        padding: 8px;
+        font-size: 9px;
+      }
+
+      .hero {
+        padding: 35px 0 25px;
+      }
+
+      h1 {
+        font-size: clamp(43px, 11vw, 64px);
+        letter-spacing: -3px;
+      }
+
+      .hero p {
+        font-size: 13px;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+
+      .result-card {
+        position: static;
+      }
+
+      .card-body {
+        padding: 18px;
+      }
+
+      .card-header {
+        padding: 15px 18px;
+      }
+
+      .result-placeholder {
+        min-height: 240px;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .two-columns {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .field-top {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .result-actions {
+        flex-direction: column;
+      }
+
+      .result-actions .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <nav class="container navbar">
+      <div class="brand">
+        <div class="brand-icon">▦</div>
+        <span>QRIS<span style="color:#555">LAB.</span></span>
+      </div>
+
+      <div class="badge">UTILITY / 001</div>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <section class="hero">
+      <span class="eyebrow">✳ PAYMENT TOOLKIT</span>
+
+      <h1>
+        MAKE IT<br>
+        <span>DYNAMIC.</span>
+      </h1>
+
+      <p>
+        Converter QRIS statis menjadi QRIS dinamis dengan nominal
+        pembayaran. Masukkan payload, atur nominal, lalu jalankan konversi.
+      </p>
+    </section>
+
+    <section class="workspace">
+
+      <!-- FORM -->
+      <div class="card">
+        <div class="card-header">
+          <h2>01 / CONFIGURATION</h2>
+          <span class="step">01</span>
+        </div>
+
+        <div class="card-body">
+
+          <div id="message" class="message" role="status" aria-live="polite"></div>
+
+          <form id="converterForm">
+
+            <div class="field">
+              <div class="field-top">
+                <label for="qris">QRIS Payload</label>
+                <button
+                  class="button button-small button-secondary"
+                  type="button"
+                  id="clearQris"
+                >
+                  CLEAR
+                </button>
+              </div>
+
+              <textarea
+                id="qris"
+                name="qris"
+                placeholder="Tempel payload QRIS statis lengkap di sini..."
+                required
+                spellcheck="false"
+              >0</textarea>
+
+              <div class="hint" style="margin-top:8px">
+                Masukkan string QRIS, bukan gambar atau URL QR.
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-top">
+                <label for="amount">Nominal Pembayaran</label>
+                <span class="hint">IDR / Rupiah</span>
+              </div>
+
+              <div class="amount-wrap">
+                <span class="amount-prefix">Rp</span>
+                <input
+                  type="number"
+                  id="amount"
+                  name="amount"
+                  value="25000"
+                  min="1"
+                  step="1"
+                  placeholder="25000"
+                  required
+                >
+              </div>
+            </div>
+
+            <div class="two-columns">
+              <div class="field">
+                <div class="field-top">
+                  <label for="feeType">Fee Type</label>
+                </div>
+
+                <select id="feeType" name="feeType">
+                  <option value="rupiah">Rupiah (Rp)</option>
+                  <option value="percent">Persentase (%)</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <div class="field-top">
+                  <label>Request Method</label>
+                </div>
+
+                <input
+                  type="text"
+                  value="POST / JSON"
+                  readonly
+                  style="font-size:13px;background:#eee"
+                >
+              </div>
+            </div>
+
+            <button class="button" id="convertBtn" type="submit">
+              ⚡ CONVERT QRIS →
+            </button>
+
+          </form>
+
+          <div class="note">
+            <strong>⚠ PERHATIAN</strong><br>
+            Nilai <code>0</code> pada payload hanyalah nilai awal.
+            Ganti dengan payload QRIS statis lengkap yang valid.
+            Respons konversi bergantung pada API.
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RESULT -->
+      <div class="card result-card">
+        <div class="card-header result-header">
+          <h2>02 / OUTPUT</h2>
+          <span class="status" id="statusBadge">READY</span>
+        </div>
+
+        <div class="result-placeholder" id="resultPlaceholder">
+          <div class="placeholder-icon">▦</div>
+          <h3>Waiting for input.</h3>
+          <p>
+            Hasil QRIS dinamis akan muncul di sini setelah API memberikan
+            respons yang berhasil.
+          </p>
+        </div>
+
+        <div class="result-content" id="resultContent" hidden>
+
+          <div class="result-label">CONVERTED PAYLOAD</div>
+
+          <div class="payload-box" id="payloadOutput"></div>
+
+          <div class="result-actions">
+            <button class="button" type="button" id="copyPayload">
+              COPY PAYLOAD
+            </button>
+
+            <button
+              class="button button-secondary"
+              type="button"
+              id="downloadResult"
+            >
+              DOWNLOAD JSON
+            </button>
+          </div>
+
+          <div class="json-box">
+            <div class="result-label">RAW API RESPONSE</div>
+            <pre id="jsonOutput">{ }</pre>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <div>QRIS LAB. © 2026</div>
+      <div>BUILT FOR DEVELOPERS — NEO BRUTALISM</div>
+    </div>
+  </footer>
+
+  <script>
+    "use strict";
+
+    const API_URL = "https://nusakit.my.id/v1/qris/convert";
+
+    const form = document.getElementById("converterForm");
+    const qrisInput = document.getElementById("qris");
+    const amountInput = document.getElementById("amount");
+    const feeTypeInput = document.getElementById("feeType");
+    const convertBtn = document.getElementById("convertBtn");
+
+    const message = document.getElementById("message");
+    const statusBadge = document.getElementById("statusBadge");
+    const resultPlaceholder = document.getElementById("resultPlaceholder");
+    const resultContent = document.getElementById("resultContent");
+    const payloadOutput = document.getElementById("payloadOutput");
+    const jsonOutput = document.getElementById("jsonOutput");
+
+    let lastResponse = null;
+    let lastPayload = "";
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = "message " + type;
+    }
+
+    function clearMessage() {
+      message.textContent = "";
+      message.className = "message";
+    }
+
+    function setLoading(loading) {
+      convertBtn.disabled = loading;
+      convertBtn.textContent = loading
+        ? "⏳ PROCESSING..."
+        : "⚡ CONVERT QRIS →";
+
+      statusBadge.textContent = loading ? "LOADING" : "READY";
+    }
+
+    function findPayload(data) {
+      if (typeof data === "string") {
+        return data;
+      }
+
+      if (!data || typeof data !== "object") {
+        return "";
+      }
+
+      // Cek nama properti yang umum digunakan oleh API QRIS.
+      const possibleKeys = [
+        "qris",
+        "payload",
+        "qr_string",
+        "qris_string",
+        "qrString",
+        "result",
+        "data"
+      ];
+
+      for (const key of possibleKeys) {
+        if (!(key in data)) continue;
+
+        const value = data[key];
+
+        if (typeof value === "string" && value.length > 0) {
+          return value;
+        }
+
+        if (value && typeof value === "object") {
+          const nested = findPayload(value);
+          if (nested) return nested;
+        }
+      }
+
+      return "";
+    }
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      clearMessage();
+
+      const qris = qrisInput.value.trim();
+      const amount = Number(amountInput.value);
+      const feeType = feeTypeInput.value;
+
+      if (!qris || qris === "0") {
+        showMessage(
+          "Masukkan payload QRIS statis yang valid, bukan nilai contoh 0.",
+          "error"
+        );
+        qrisInput.focus();
+        return;
+      }
+
+      if (!Number.isSafeInteger(amount) || amount < 1) {
+        showMessage(
+          "Nominal harus berupa bilangan bulat lebih besar dari 0.",
+          "error"
+        );
+        amountInput.focus();
+        return;
+      }
+
+      // Body mengikuti format API yang diminta.
+      const requestBody = {
+        qris: qris,
+        amount: amount,
+        feeType: feeType
+      };
+
+      setLoading(true);
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify(requestBody)
+        });
+
+        const responseText = await response.text();
+
+        let data;
+
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          data = { raw: responseText };
+        }
+
+        if (!response.ok) {
+          const errorMessage =
+            data.message ||
+            data.error ||
+            data.raw ||
+            `HTTP ${response.status}`;
+
+          throw new Error(String(errorMessage));
+        }
+
+        lastResponse = {
+          request: requestBody,
+          response: data,
+          httpStatus: response.status
+        };
+
+        lastPayload = findPayload(data);
+
+        resultPlaceholder.hidden = true;
+        resultContent.hidden = false;
+
+        payloadOutput.textContent = lastPayload ||
+          "Respons diterima, tetapi field payload tidak ditemukan. Periksa RAW API RESPONSE.";
+
+        jsonOutput.textContent = JSON.stringify(data, null, 2);
+
+        statusBadge.textContent = "SUCCESS";
+        statusBadge.style.background = "#b7f7a8";
+
+        showMessage(
+          lastPayload
+            ? "Konversi berhasil. Payload hasil API sudah tersedia."
+            : "API merespons, tetapi payload belum dapat dikenali otomatis. Periksa respons mentah.",
+          lastPayload ? "success" : "error"
+        );
+
+      } catch (error) {
+        statusBadge.textContent = "ERROR";
+        statusBadge.style.background = "#ffc3c3";
+
+        let errorText = error.message || "Terjadi kesalahan.";
+
+        if (
+          error instanceof TypeError ||
+          /failed to fetch|networkerror/i.test(errorText)
+        ) {
+          errorText =
+            "Request gagal. Periksa koneksi, status API, dan dukungan CORS server. Jika CORS tidak diizinkan, gunakan backend proxy.";
+        }
+
+        showMessage(errorText, "error");
+
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    document.getElementById("clearQris").addEventListener("click", () => {
+      qrisInput.value = "";
+      qrisInput.focus();
+      clearMessage();
+    });
+
+    document.getElementById("copyPayload").addEventListener(
+      "click",
+      async () => {
+        if (!lastPayload) {
+          showMessage(
+            "Payload hasil belum tersedia. Periksa respons API terlebih dahulu.",
+            "error"
+          );
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(lastPayload);
+          showMessage("Payload berhasil disalin.", "success");
+        } catch {
+          showMessage(
+            "Clipboard tidak tersedia. Salin payload secara manual.",
+            "error"
+          );
+        }
+      }
+    );
+
+    document.getElementById("downloadResult").addEventListener(
+      "click",
+      () => {
+        if (!lastResponse) {
+          showMessage("Belum ada respons API untuk diunduh.", "error");
+          return;
+        }
+
+        const blob = new Blob(
+          [JSON.stringify(lastResponse, null, 2)],
+          { type: "application/json;charset=utf-8" }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = "qris-conversion-result.json";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+      }
+    );
+  </script>
+
+</body>
+</html>

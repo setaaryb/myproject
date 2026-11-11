@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sistem Kas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ============ HALAMAN PUBLIK ============ -->
+    <div id="viewPublic" class="wrap">
+        <header class="top">
+            <h1 class="brand" id="pubTitle">Memuat…</h1>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn white" data-go="login" id="btnToLogin">🔑 Login admin</button>
+                <button class="btn" data-go="admin" id="btnToAdmin" style="display:none">⚡ Buka dashboard</button>
+            </div>
+        </header>
+
+        <div class="ticker hidden" id="ticker" aria-hidden="true">
+            <div class="ticker-track" id="tickerTrack"></div>
+        </div>
+        <section class="stats" id="pubStats"></section>
+        <section class="box pad overall" id="overall"></section>
+
+        <div class="cols">
+            <div class="stack">
+                <section class="box">
+                    <div class="bar"><span>👥 Anggota & target</span><span class="dots"><i></i><i></i><i></i></span>
+                    </div>
+                    <div class="pad">
+                        <input class="input search" id="searchMember" type="search" placeholder="Cari nama anggota…"
+                            aria-label="Cari anggota">
+                        <div class="chips" id="chips"><button class="chip on" data-f="">Semua</button><button
+                                class="chip" data-f="lunas">Lunas</button><button class="chip" data-f="belum">Belum
+                                lunas</button></div>
+                        <div class="members" id="pubMembers">
+                            <div class="skeleton">Memuat anggota…</div>
+                        </div>
+                    </div>
+                </section>
+                <section class="box">
+                    <div class="bar"><span>📜 Riwayat transaksi</span></div>
+                    <div class="pad">
+                        <ul class="tx" id="pubTx">
+                            <li class="skeleton" style="display:block">Memuat transaksi…</li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+            <aside class="stack">
+                <section class="box" style="background:#FFF9C4">
+                    <div class="bar"><span>💳 Cara membayar</span></div>
+                    <div class="pad">
+                        <p id="pubPay" style="white-space:pre-line;font-weight:700">Memuat…</p>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </div>
+
+    <!-- ============ HALAMAN LOGIN ============ -->
+    <div id="viewLogin" class="login-page hidden">
+        <span class="shape s1"></span><span class="shape s2"></span><span class="shape s3"></span>
+        <div class="login-card box box-lg">
+            <div class="bar"><span>LOGIN_ADMIN.EXE</span><span class="dots"><i></i><i></i><i></i></span></div>
+            <div class="pad" style="padding:24px">
+                <h1>Masuk sebagai admin</h1>
+                <p class="muted" style="margin-bottom:18px" id="loginSub">Kelola anggota, transaksi, dan pengaturan kas.
+                </p>
+                <div class="err hidden" id="loginErr" role="alert"></div>
+                <div class="field">
+                    <label for="inputPass">Password</label>
+                    <input class="input" type="password" id="inputPass" placeholder="Masukkan password"
+                        autocomplete="current-password">
+                </div>
+                <label style="display:flex;gap:8px;align-items:center;font-weight:500;margin-bottom:16px"><input
+                        type="checkbox" id="showPass" style="width:18px;height:18px"> Tampilkan password</label>
+                <button class="btn block" id="btnLogin">Masuk</button>
+                <a class="back" href="#/">← Kembali ke halaman kas</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ DASHBOARD ADMIN ============ -->
+    <div id="viewAdmin" class="admin hidden">
+        <aside class="side">
+            <div class="logo" id="admLogo">Kas</div>
+            <nav class="nav" id="admNav">
+                <button data-tab="tabOverview" class="on"><span class="ic">📊</span><span>Ringkasan</span></button>
+                <button data-tab="tabTrans"><span class="ic">💸</span><span>Transaksi</span></button>
+                <button data-tab="tabMembers"><span class="ic">👥</span><span>Anggota</span></button>
+                <button data-tab="tabSettings"><span class="ic">⚙️</span><span>Pengaturan</span></button>
+            </nav>
+            <div class="spacer"></div>
+        </aside>
+
+        <main class="main">
+            <div class="admhead"><b>Halo, Admin 👋</b>
+                <div><button class="btn white sm" id="btnRefresh">↻ Muat ulang</button><button class="btn white sm"
+                        data-go="public">🌐 Halaman publik</button><button class="btn red sm"
+                        id="btnLogout">Keluar</button></div>
+            </div>
+            <!-- Ringkasan -->
+            <section class="tab on" id="tabOverview">
+                <h2>Ringkasan</h2>
+                <div class="stats" id="admStats"></div>
+                <div class="cols">
+                    <div class="box">
+                        <div class="bar"><span>Transaksi terbaru</span></div>
+                        <div class="pad">
+                            <ul class="tx" id="admRecent"></ul>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="bar"><span>Belum lunas</span></div>
+                        <div class="pad" id="admUnpaid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transaksi -->
+            <section class="tab" id="tabTrans">
+                <h2>Transaksi</h2>
+                <div class="cols">
+                    <div class="box">
+                        <div class="bar"><span>Semua mutasi</span>
+                            <select id="txFilter" class="input"
+                                style="width:auto;min-height:32px;padding:2px 8px;box-shadow:none;border-width:2px"
+                                aria-label="Filter">
+                                <option value="">Semua</option>
+                                <option value="MASUK">Pemasukan</option>
+                                <option value="KELUAR">Pengeluaran</option>
+                            </select>
+                        </div>
+                        <div class="pad">
+                            <ul class="tx" id="admTx"></ul>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="bar"><span>Catat transaksi</span></div>
+                        <div class="pad">
+                            <div class="field"><label for="txTipe">Tipe</label>
+                                <select id="txTipe" class="input">
+                                    <option value="MASUK">Pemasukan</option>
+                                    <option value="KELUAR">Pengeluaran</option>
+                                </select>
+                            </div>
+                            <div class="field" id="groupUser"><label for="txUserId">Anggota</label><select id="txUserId"
+                                    class="input"></select>
+                                <div class="hint" id="userHint"></div>
+                            </div>
+                            <div class="field"><label>Pilih cepat</label>
+                                <div class="chips" id="quick"><button type="button" class="chip"
+                                        data-amt="10000">10rb</button><button type="button" class="chip"
+                                        data-amt="20000">20rb</button><button type="button" class="chip"
+                                        data-amt="50000">50rb</button><button type="button" class="chip"
+                                        data-amt="100000">100rb</button><button type="button" class="chip"
+                                        id="fillRest">Sisa tagihan</button></div>
+                            </div>
+                            <div class="grid2">
+                                <div class="field"><label for="txJumlah">Jumlah (Rp)</label><input type="number" min="0"
+                                        inputmode="numeric" id="txJumlah" class="input" placeholder="50000">
+                                    <div class="hint" id="jumlahHint"></div>
+                                </div>
+                                <div class="field"><label for="txTanggal">Tanggal</label><input type="date"
+                                        id="txTanggal" class="input"></div>
+                            </div>
+                            <div class="field"><label for="txKet">Keterangan</label><input type="text" id="txKet"
+                                    class="input" placeholder="Contoh: kas bulan November"></div>
+                            <button class="btn block" id="btnTx">Simpan transaksi</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Anggota -->
+            <section class="tab" id="tabMembers">
+                <h2>Anggota</h2>
+                <div class="cols">
+                    <div class="box">
+                        <div class="bar"><span>Daftar anggota</span></div>
+                        <div class="pad" id="admMembers"></div>
+                    </div>
+                    <div class="box">
+                        <div class="bar"><span>Tambah anggota</span></div>
+                        <div class="pad">
+                            <div class="field"><label for="usrNama">Nama</label><input type="text" id="usrNama"
+                                    class="input" placeholder="Nama lengkap"></div>
+                            <div class="field"><label for="usrTarget">Target saldo (Rp)</label><input type="number"
+                                    min="0" inputmode="numeric" id="usrTarget" class="input" value="100000"></div>
+                            <button class="btn block" id="btnUser">Tambah anggota</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pengaturan -->
+            <section class="tab" id="tabSettings">
+                <h2>Pengaturan</h2>
+                <div class="box" style="max-width:640px">
+                    <div class="bar"><span>Pengaturan kas</span></div>
+                    <div class="pad">
+                        <div class="field"><label for="cfgTitle">Judul kas</label><input type="text" id="cfgTitle"
+                                class="input"></div>
+                        <div class="field"><label for="cfgPayment">Info pembayaran</label><textarea id="cfgPayment"
+                                class="input" rows="4"></textarea></div>
+                        <div class="field"><label for="cfgPass">Password baru</label><input type="password" id="cfgPass"
+                                class="input" placeholder="Kosongkan jika tidak diganti" autocomplete="new-password">
+                        </div>
+                        <button class="btn" id="btnSettings">Simpan pengaturan</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="toasts" id="toasts" aria-live="polite"></div>
+    <div class="overlay hidden" id="confirmBox">
+        <div class="box box-lg" style="max-width:380px;width:100%">
+            <div class="bar"><span>Konfirmasi</span></div>
+            <div class="pad">
+                <p id="confirmMsg" style="font-weight:700;margin-bottom:16px"></p>
+                <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn white"
+                        id="confirmNo">Batal</button><button class="btn red" id="confirmYes">Ya, hapus</button></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

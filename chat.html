@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WA Chat Viewer</title>
+    <style>
+        :root {
+            --head: #008069;
+            --head-t: #fff;
+            --bg: #efeae2;
+            --in: #fff;
+            --out: #d9fdd3;
+            --txt: #111b21;
+            --sub: #667781;
+            --chip: #fff3c5;
+            --chip-t: #54656f;
+            --sys: #ffffffcc;
+            --panel: #fff;
+            --line: #e9edef;
+            --hl: #ffe08a;
+            --tick: #53bdeb;
+        }
+
+        body.dark {
+            --head: #202c33;
+            --head-t: #e9edef;
+            --bg: #0b141a;
+            --in: #202c33;
+            --out: #005c4b;
+            --txt: #e9edef;
+            --sub: #8696a0;
+            --chip: #182229;
+            --chip-t: #8696a0;
+            --sys: #182229dd;
+            --panel: #111b21;
+            --line: #222d34;
+            --hl: #7a5c00;
+            --tick: #53bdeb;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+            color: var(--txt)
+        }
+
+        body {
+            background: var(--panel);
+            display: flex;
+            flex-direction: column
+        }
+
+        #app {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            box-shadow: 0 0 20px #0003
+        }
+
+        header {
+            background: var(--head);
+            color: var(--head-t);
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 58px
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #aebac1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #fff;
+            flex: none
+        }
+
+        .title {
+            flex: 1;
+            min-width: 0
+        }
+
+        .title b {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .title small {
+            font-size: 12px;
+            opacity: .8
+        }
+
+        header button,
+        header select {
+            background: transparent;
+            border: 0;
+            color: inherit;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 6px
+        }
+
+        header select {
+            font-size: 13px;
+            background: #0003;
+            max-width: 150px
+        }
+
+        header select option {
+            color: #000
+        }
+
+        header button:hover {
+            background: #ffffff22
+        }
+
+        #searchbar {
+            display: none;
+            background: var(--panel);
+            padding: 8px 12px;
+            gap: 8px;
+            align-items: center;
+            border-bottom: 1px solid var(--line)
+        }
+
+        #searchbar input {
+            flex: 1;
+            border: 0;
+            background: var(--line);
+            color: var(--txt);
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none
+        }
+
+        #searchbar span {
+            font-size: 12px;
+            color: var(--sub);
+            min-width: 70px;
+            text-align: center
+        }
+
+        #searchbar button {
+            background: none;
+            border: 0;
+            color: var(--sub);
+            font-size: 18px;
+            cursor: pointer
+        }
+
+        #chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 6% 20px;
+            background: var(--bg);
+            background-image: radial-gradient(#0000000a 1.2px, transparent 1.2px);
+            background-size: 22px 22px;
+            scroll-behavior: auto
+        }
+
+        .date {
+            display: flex;
+            justify-content: center;
+            margin: 12px 0 8px;
+            position: sticky;
+            top: 4px;
+            z-index: 2
+        }
+
+        .date span {
+            background: var(--chip);
+            color: var(--chip-t);
+            font-size: 12.5px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            box-shadow: 0 1px .5px #0002
+        }
+
+        .sys {
+            display: flex;
+            justify-content: center;
+            margin: 6px 0
+        }
+
+        .sys span {
+            background: var(--chip);
+            color: var(--chip-t);
+            font-size: 12.5px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 80%;
+            box-shadow: 0 1px .5px #0002
+        }
+
+        .row {
+            display: flex;
+            margin: 2px 0
+        }
+
+        .row.out {
+            justify-content: flex-end
+        }
+
+        .bubble {
+            max-width: min(75%, 560px);
+            padding: 6px 8px 6px 9px;
+            border-radius: 8px;
+            background: var(--in);
+            box-shadow: 0 1px .5px #0002;
+            position: relative;
+            font-size: 14.2px;
+            line-height: 1.38;
+            word-wrap: break-word;
+            overflow-wrap: anywhere
+        }
+
+        .out .bubble {
+            background: var(--out)
+        }
+
+        .first.in .bubble {
+            border-top-left-radius: 0
+        }
+
+        .first.out .bubble {
+            border-top-right-radius: 0
+        }
+
+        .first.in .bubble::before,
+        .first.out .bubble::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            border: 7px solid transparent
+        }
+
+        .first.in .bubble::before {
+            left: -7px;
+            border-top-color: var(--in);
+            border-right-color: var(--in)
+        }
+
+        .first.out .bubble::after {
+            right: -7px;
+            border-top-color: var(--out);
+            border-left-color: var(--out)
+        }
+
+        .first {
+            margin-top: 8px
+        }
+
+        .name {
+            font-size: 12.8px;
+            font-weight: 600;
+            margin-bottom: 2px
+        }
+
+        .body {
+            white-space: pre-wrap
+        }
+
+        .meta {
+            float: right;
+            margin: 6px 0 -3px 10px;
+            font-size: 11px;
+            color: var(--sub);
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            user-select: none
+        }
+
+        .tick {
+            color: var(--tick);
+            font-size: 13px;
+            letter-spacing: -3px
+        }
+
+        .media {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #0000000f;
+            border-radius: 6px;
+            padding: 10px 12px;
+            color: var(--sub);
+            font-style: italic
+        }
+
+        .del {
+            color: var(--sub);
+            font-style: italic
+        }
+
+        .del::before {
+            content: "🚫 "
+        }
+
+        .bubble a {
+            color: #027eb5;
+            text-decoration: none
+        }
+
+        body.dark .bubble a {
+            color: #53bdeb
+        }
+
+        mark {
+            background: var(--hl);
+            color: inherit;
+            border-radius: 2px
+        }
+
+        mark.cur {
+            outline: 2px solid #ff9800
+        }
+
+        /* upload */
+        #drop {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 30px;
+            text-align: center;
+            background: linear-gradient(#00a884 0 220px, var(--bg) 220px)
+        }
+
+        #drop .card {
+            background: var(--panel);
+            padding: 36px 30px;
+            border-radius: 14px;
+            box-shadow: 0 6px 24px #0003;
+            max-width: 460px;
+            width: 100%
+        }
+
+        #drop h1 {
+            margin: 0 0 8px;
+            font-size: 22px;
+            font-weight: 600
+        }
+
+        #drop p {
+            color: var(--sub);
+            font-size: 14px;
+            margin: 6px 0 18px
+        }
+
+        #drop .btn {
+            display: inline-block;
+            background: #00a884;
+            color: #fff;
+            padding: 11px 24px;
+            border-radius: 24px;
+            cursor: pointer;
+            font-weight: 600
+        }
+
+        #drop.over .card {
+            outline: 3px dashed #00a884
+        }
+
+        #opts {
+            display: none;
+            margin-top: 16px;
+            text-align: left
+        }
+
+        #opts label {
+            font-size: 13px;
+            color: var(--sub);
+            display: block;
+            margin-bottom: 6px
+        }
+
+        #opts select {
+            width: 100%;
+            padding: 9px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            color: var(--txt);
+            font-size: 14px
+        }
+
+        #opts .btn {
+            width: 100%;
+            text-align: center;
+            margin-top: 14px;
+            border: 0;
+            font-size: 15px
+        }
+
+        .err {
+            color: #d93025;
+            font-size: 13px
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="drop">
+        <div class="card">
+            <h1>📱 Pembaca Chat WhatsApp</h1>
+            <p>Pilih atau seret file <b>.txt</b> hasil ekspor chat WhatsApp. File dibaca langsung di browser Anda dan
+                tidak diunggah ke mana pun.</p>
+            <label class="btn" for="file">Pilih File .txt</label>
+            <input type="file" id="file" accept=".txt,text/plain" hidden>
+            <div class="err" id="err"></div>
+            <div id="opts">
+                <label for="who">Anda adalah (pesan Anda tampil di kanan):</label>
+                <select id="who"></select>
+                <button class="btn" id="go">Buka Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app">
+        <header>
+            <div class="avatar" id="av">?</div>
+            <div class="title"><b id="ttl"></b><small id="sub"></small></div>
+            <button id="bSearch" title="Cari">🔍</button>
+            <button id="bTheme" title="Mode gelap/terang">🌙</button>
+            <button id="bBack" title="Ganti file">✕</button>
+        </header>
+        <div id="searchbar">
+            <input id="q" placeholder="Cari pesan…">
+            <span id="cnt"></span>
+            <button id="up">▲</button><button id="dn">▼</button>
+        </div>
+        <div id="chat"></div>
+    </div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        let msgs = [], senders = [], me = '', fileName = '';
+
+        /* ---------- Parser ---------- */
+        const RE_A = /^\u200e?(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4}),?\s+(\d{1,2})[.:](\d{2})(?::\d{2})?\s?([AaPp]\.?[Mm]\.?)?\s+-\s(.*)$/;   // 30/12/22 19.33 - ...
+        const RE_B = /^\u200e?\[(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4}),?\s+(\d{1,2})[.:](\d{2})(?::\d{2})?\s?([AaPp]\.?[Mm]\.?)?\]\s(.*)$/; // [30/12/22, 19:33:10] ...
+        const DEL = /^(pesan ini dihapus|anda menghapus pesan ini|this message was deleted|you deleted this message)\.?$/i;
+        const MEDIA = /^\u200e?<(media tidak disertakan|media omitted|attached:.*)>$|^\u200e?(null|gambar tidak disertakan|stiker tidak disertakan|sticker omitted|image omitted|video omitted|audio omitted)$/i;
+        const EDIT = /\s*<(pesan ini diedit|this message was edited)>\s*$/i;
+
+        function parse(text) {
+            const out = []; let cur = null;
+            text = text.replace(/\r/g, '');
+            for (const line of text.split('\n')) {
+                const m = line.match(RE_A) || line.match(RE_B);
+                if (m) {
+                    let [, d, mo, y, h, mi, ap, rest] = m;
+                    y = +y; if (y < 100) y += 2000; h = +h;
+                    if (ap) { const p = ap.toLowerCase()[0] === 'p'; if (p && h < 12) h += 12; if (!p && h === 12) h = 0; }
+                    // jika format bulan/hari terbalik (mis. 12/31/23)
+                    let day = +d, mon = +mo; if (mon > 12 && day <= 12) { [day, mon] = [mon, day] }
+                    const date = new Date(y, mon - 1, day, h, +mi);
+                    let sender = null, body = rest;
+                    const s = rest.match(/^([^:\n]{1,60}?): ([\s\S]*)$/);
+                    if (s) { sender = s[1]; body = s[2]; }
+                    cur = { date, sender, body };
+                    out.push(cur);
+                } else if (cur) {
+                    cur.body += '\n' + line;
+                }
+            }
+            for (const m of out) {
+                m.body = m.body.replace(/^\u200e/, '');
+                m.edited = EDIT.test(m.body); if (m.edited) m.body = m.body.replace(EDIT, '');
+                m.body = m.body.replace(/\s+$/, '');
+                m.kind = !m.sender ? 'sys' : DEL.test(m.body) ? 'del' : MEDIA.test(m.body) ? 'media' : 'text';
+            }
+            return out;
+        }
+
+        /* ---------- UI helpers ---------- */
+        const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+        const linkify = s => esc(s).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
+            .replace(/\*([^*\n]+)\*/g, '<b>$1</b>').replace(/(^|\s)_([^_\n]+)_(?=\s|$)/g, '$1<i>$2</i>').replace(/~([^~\n]+)~/g, '<s>$1</s>');
+        const pad = n => String(n).padStart(2, '0');
+        const hhmm = d => pad(d.getHours()) + '.' + pad(d.getMinutes());
+        const dayKey = d => d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+        const dayLabel = d => {
+            const t = new Date(), y = new Date(Date.now() - 864e5);
+            if (dayKey(d) === dayKey(t)) return 'Hari ini';
+            if (dayKey(d) === dayKey(y)) return 'Kemarin';
+            return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        };
+        const COLORS = ['#06cf9c', '#53bdeb', '#e26ab6', '#ff7a4d', '#a5b337', '#b38f00', '#9b6bff', '#d9534f', '#009688', '#e8a317'];
+        const colorOf = n => COLORS[[...n].reduce((a, c) => a + c.charCodeAt(0), 0) % COLORS.length];
+
+        /* ---------- Render ---------- */
+        function render() {
+            const chat = $('chat'); chat.innerHTML = '';
+            const frag = document.createDocumentFragment();
+            let lastDay = '', lastSender = null;
+            const group = senders.length > 2;
+            msgs.forEach((m, i) => {
+                const dk = dayKey(m.date);
+                if (dk !== lastDay) {
+                    const e = document.createElement('div'); e.className = 'date';
+                    e.innerHTML = '<span>' + dayLabel(m.date) + '</span>'; frag.appendChild(e);
+                    lastDay = dk; lastSender = null;
+                }
+                if (m.kind === 'sys') {
+                    const e = document.createElement('div'); e.className = 'sys';
+                    e.innerHTML = '<span>' + (/enkripsi|encrypt/i.test(m.body) ? '🔒 ' : '') + esc(m.body) + '</span>';
+                    frag.appendChild(e); lastSender = null; return;
+                }
+                const isOut = m.sender === me;
+                const first = lastSender !== m.sender; lastSender = m.sender;
+                const row = document.createElement('div');
+                row.className = 'row ' + (isOut ? 'out' : 'in') + (first ? ' first' : '');
+                let inner = '';
+                if (group && !isOut && first) inner += '<div class="name" style="color:' + colorOf(m.sender) + '">' + esc(m.sender) + '</div>';
+                if (m.kind === 'del') inner += '<div class="del">' + (isOut ? 'Anda menghapus pesan ini' : 'Pesan ini dihapus') + '</div>';
+                else if (m.kind === 'media') inner += '<div class="media">🖼️ Media tidak disertakan</div>';
+                else inner += '<span class="body" data-raw="1">' + linkify(m.body) + '</span>';
+                inner += '<span class="meta">' + (m.edited ? 'diedit ' : '') + hhmm(m.date) + (isOut ? ' <span class="tick">✓✓</span>' : '') + '</span><div style="clear:both"></div>';
+                row.innerHTML = '<div class="bubble">' + inner + '</div>';
+                row.dataset.i = i;
+                frag.appendChild(row);
+            });
+            chat.appendChild(frag);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        /* ---------- Search ---------- */
+        let hits = [], hi = -1;
+        function doSearch() {
+            document.querySelectorAll('mark').forEach(m => { m.replaceWith(document.createTextNode(m.textContent)); });
+            document.querySelectorAll('.body').forEach(b => b.normalize());
+            hits = []; hi = -1;
+            const q = $('q').value.trim();
+            if (!q) { $('cnt').textContent = ''; return; }
+            const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+            document.querySelectorAll('.body').forEach(b => {
+                const walker = document.createTreeWalker(b, NodeFilter.SHOW_TEXT);
+                const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+                nodes.forEach(n => {
+                    if (!re.test(n.nodeValue)) { re.lastIndex = 0; return; } re.lastIndex = 0;
+                    const span = document.createElement('span');
+                    span.innerHTML = esc(n.nodeValue).replace(new RegExp(esc(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), '<mark>$&</mark>');
+                    n.replaceWith(span);
+                });
+            });
+            hits = [...document.querySelectorAll('mark')];
+            $('cnt').textContent = hits.length ? '0 / ' + hits.length : 'Tidak ada';
+            if (hits.length) go(hits.length - 1);
+        }
+        function go(n) {
+            if (!hits.length) return;
+            if (hi >= 0) hits[hi].classList.remove('cur');
+            hi = (n + hits.length) % hits.length;
+            hits[hi].classList.add('cur');
+            hits[hi].scrollIntoView({ block: 'center' });
+            $('cnt').textContent = (hi + 1) + ' / ' + hits.length;
+        }
+
+        /* ---------- Events ---------- */
+        function load(file) {
+            $('err').textContent = ''; fileName = file.name.replace(/\.txt$/i, '').replace(/^(WhatsApp )?(Chat|Obrolan)( WhatsApp)?( dengan| with)?\s*/i, '');
+            const r = new FileReader();
+            r.onload = e => {
+                msgs = parse(e.target.result);
+                if (!msgs.length) { $('err').textContent = 'Format tidak dikenali. Pastikan ini file ekspor chat WhatsApp (.txt).'; $('opts').style.display = 'none'; return; }
+                const cnt = {}; msgs.forEach(m => m.sender && (cnt[m.sender] = (cnt[m.sender] || 0) + 1));
+                senders = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]);
+                $('who').innerHTML = senders.map(s => '<option>' + esc(s) + '</option>').join('');
+                $('opts').style.display = 'block';
+            };
+            r.readAsText(file, 'UTF-8');
+        }
+        $('file').onchange = e => e.target.files[0] && load(e.target.files[0]);
+        const drop = $('drop');
+        ['dragover', 'dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over') }));
+        ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over') }));
+        drop.addEventListener('drop', e => e.dataTransfer.files[0] && load(e.dataTransfer.files[0]));
+
+        $('go').onclick = () => {
+            me = $('who').value;
+            const others = senders.filter(s => s !== me);
+            const name = senders.length > 2 ? (fileName || 'Grup') : (others[0] || fileName || 'Chat');
+            $('ttl').textContent = name; $('av').textContent = name.trim()[0]?.toUpperCase() || '?';
+            const f = msgs[0].date, l = msgs[msgs.length - 1].date;
+            $('sub').textContent = msgs.length.toLocaleString('id-ID') + ' pesan · ' + f.toLocaleDateString('id-ID') + ' – ' + l.toLocaleDateString('id-ID');
+            drop.style.display = 'none'; $('app').style.display = 'flex';
+            render();
+        };
+        $('bBack').onclick = () => { $('app').style.display = 'none'; drop.style.display = 'flex'; $('opts').style.display = 'none'; $('file').value = ''; $('chat').innerHTML = ''; };
+        $('bTheme').onclick = () => { document.body.classList.toggle('dark'); $('bTheme').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙'; };
+        $('bSearch').onclick = () => { const s = $('searchbar'); const on = s.style.display === 'flex'; s.style.display = on ? 'none' : 'flex'; if (!on) $('q').focus(); else { $('q').value = ''; doSearch(); } };
+        let t; $('q').oninput = () => { clearTimeout(t); t = setTimeout(doSearch, 250) };
+        $('q').onkeydown = e => { if (e.key === 'Enter') go(e.shiftKey ? hi + 1 : hi - 1) };
+        $('up').onclick = () => go(hi - 1); $('dn').onclick = () => go(hi + 1);
+    </script>
+</body>
+
+</html>
